@@ -1,0 +1,157 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(uuid())
+  name       String
+  email      String   @unique
+  password   String
+  birth_date DateTime
+  weight     Float
+  height     Float
+  role       Role
+  avatar_url String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  workout_plans     WorkoutPlan[]
+  training_sessions TrainingSession[]
+  user_streak UserStreak[]
+  streak_activity StreakActivity[]
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+model WorkoutPlan {
+  id              String   @id @default(uuid())
+  name            String
+  focus           String
+  notes           String?
+  user_id         String
+  workout_type_id Int
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  user            User                  @relation(fields: [user_id], references: [id])
+  workout_type    WorkoutType           @relation(fields: [workout_type_id], references: [id])
+  exercises       WorkoutPlanExercise[]
+  TrainingSession TrainingSession[]
+}
+
+model WorkoutPlanExercise {
+  id              String   @id @default(uuid())
+  workout_plan_id String
+  exercise_id     Int
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  workout_plan WorkoutPlan @relation(fields: [workout_plan_id], references: [id])
+}
+
+model WorkoutType {
+  id          Int           @id @default(autoincrement())
+  name        String
+  notes       String?
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
+  WorkoutPlan WorkoutPlan[]
+}
+
+model TrainingSession {
+  id              String         @id @default(uuid())
+  name            String?
+  start_datetime  DateTime
+  end_datetime    DateTime?
+  duration        Int?
+  notes           String?
+  user_id         String
+  workout_plan_id String?
+  calories_burned Float?
+  status          TrainingStatus @default(ACTIVE)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user         User               @relation(fields: [user_id], references: [id])
+  workout_plan WorkoutPlan?       @relation(fields: [workout_plan_id], references: [id])
+  exercises    TrainingExercise[]
+}
+
+enum TrainingStatus {
+  ACTIVE
+  PAUSED
+  FINISHED
+}
+
+model TrainingExercise {
+  id            String       @id @default(uuid())
+  session_id    String
+  exercise_id   Int?
+  name          String?
+  exercise_type ExerciseType
+  total_sets    Int? 
+  duration      Int? 
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @updatedAt
+
+  session  TrainingSession @relation(fields: [session_id], references: [id])
+  exercise Exercise?       @relation(fields: [exercise_id], references: [id])
+  sets     Set[] 
+}
+
+enum ExerciseType {
+  STRENGTH
+  CARDIO
+}
+
+model Set {
+  id                   String @id @default(uuid())
+  training_exercise_id String
+  number               Int
+  weight_kg            Float
+  repetitions          Int
+  rest_time            Int?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  training_exercise TrainingExercise @relation(fields: [training_exercise_id], references: [id])
+}
+
+model Exercise {
+  id               Int                @id @default(autoincrement())
+  name             String
+  variation        String?
+  execution        String
+  TrainingExercise TrainingExercise[]
+}
+
+model UserStreak {
+  id            String   @id @default(uuid())
+  user_id       String   @unique
+  week_start    DateTime 
+  days_count    Int      @default(0) 
+  streak_count  Int      @default(0) 
+  weekly_goal   Int      
+
+  user          User     @relation(fields: [user_id], references: [id])
+  updated_at    DateTime @updatedAt
+  created_at    DateTime @default(now())
+}
+
+model StreakActivity {
+  id      String   @id @default(uuid())
+  user_id String
+  date    DateTime
+
+  user User @relation(fields: [user_id], references: [id])
+}

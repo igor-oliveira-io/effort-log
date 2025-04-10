@@ -1,0 +1,10 @@
+# Arquivos gerais que não pertencem ao repositório
+.env
+*.log
+*.DS_Store
+*.zip
+*.tar.gz
+
+# Docker
+*.env.override
+docker-compose.override.yml
