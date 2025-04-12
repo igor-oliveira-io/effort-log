@@ -17,7 +17,7 @@ export default function HomePage() {
       <p className="text-gray-500 max-w-2xl text-base sm:text-lg mb-8">
         Registre seus treinos, observe e mantenha sua consistência com sua meta
         semanal e contador de streak, acompanhe sua evolução e progressão de
-        carga com seu diário de treinos.
+        carga com seu diário de treinos Effort Log.
       </p>
 
       <div className="flex flex-col sm:flex-row gap-4">
