@@ -18,15 +18,15 @@ export default function NewSetModal({
   onClose,
   onSetAdded,
 }: NewSetModalProps) {
-  const [weight, setWeight] = useState<number | ''>('');
-  const [repetitions, setRepetitions] = useState<number | ''>('');
-  const [restTime, setRestTime] = useState<number | ''>('');
+  const [weight, setWeight] = useState<number | "">("");
+  const [repetitions, setRepetitions] = useState<number | "">("");
+  const [restTime, setRestTime] = useState<number | "">("");
   const [error, setError] = useState<string>("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (weight === '' || repetitions === '') {
+    if (weight === "" || repetitions === "") {
       setError("Preencha os campos obrigatórios.");
       return;
     }
@@ -50,7 +50,11 @@ export default function NewSetModal({
 
   return (
     <Transition appear show as={Fragment}>
-      <Dialog as="div" className="fixed inset-0 z-50 overflow-y-auto" onClose={onClose}>
+      <Dialog
+        as="div"
+        className="fixed inset-0 z-50 overflow-y-auto"
+        onClose={onClose}
+      >
         <div className="min-h-screen px-4 text-center">
           <Transition.Child
             as={Fragment}
@@ -64,7 +68,10 @@ export default function NewSetModal({
             <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" />
           </Transition.Child>
 
-          <span className="inline-block h-screen align-middle" aria-hidden="true">
+          <span
+            className="inline-block h-screen align-middle"
+            aria-hidden="true"
+          >
             &#8203;
           </span>
 
@@ -78,10 +85,7 @@ export default function NewSetModal({
             leaveTo="opacity-0 scale-95"
           >
             <div className="inline-block w-full max-w-md p-6 my-8 text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
-              <Dialog.Title
-                as="h3"
-                className="text-lg font-bold text-gray-800"
-              >
+              <Dialog.Title as="h3" className="text-lg font-bold text-gray-800">
                 Adicionar Série #{nextSetNumber}
               </Dialog.Title>
 
@@ -95,9 +99,16 @@ export default function NewSetModal({
                   <input
                     type="number"
                     min="0"
+                    step="0.1"
                     value={weight}
-                    onFocus={(e) => e.target.value === "0" && (e.target.value = "")}
-                    onChange={(e) => setWeight(e.target.value === '' ? '' : Number(e.target.value))}
+                    onFocus={(e) =>
+                      e.target.value === "0" && (e.target.value = "")
+                    }
+                    onChange={(e) =>
+                      setWeight(
+                        e.target.value === "" ? "" : Number(e.target.value)
+                      )
+                    }
                     placeholder="Ex: 40"
                     required
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -112,8 +123,14 @@ export default function NewSetModal({
                     type="number"
                     min="0"
                     value={repetitions}
-                    onFocus={(e) => e.target.value === "0" && (e.target.value = "")}
-                    onChange={(e) => setRepetitions(e.target.value === '' ? '' : Number(e.target.value))}
+                    onFocus={(e) =>
+                      e.target.value === "0" && (e.target.value = "")
+                    }
+                    onChange={(e) =>
+                      setRepetitions(
+                        e.target.value === "" ? "" : Number(e.target.value)
+                      )
+                    }
                     placeholder="Ex: 10"
                     required
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -128,8 +145,14 @@ export default function NewSetModal({
                     type="number"
                     min="0"
                     value={restTime}
-                    onFocus={(e) => e.target.value === "0" && (e.target.value = "")}
-                    onChange={(e) => setRestTime(e.target.value === '' ? '' : Number(e.target.value))}
+                    onFocus={(e) =>
+                      e.target.value === "0" && (e.target.value = "")
+                    }
+                    onChange={(e) =>
+                      setRestTime(
+                        e.target.value === "" ? "" : Number(e.target.value)
+                      )
+                    }
                     placeholder="Opcional"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />

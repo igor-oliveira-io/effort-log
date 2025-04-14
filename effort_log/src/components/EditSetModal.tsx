@@ -19,21 +19,21 @@ export default function EditSetModal({
   onClose,
   onSetUpdated,
 }: EditSetModalProps) {
-  const [weight, setWeight] = useState<number | ''>('');
-  const [repetitions, setRepetitions] = useState<number | ''>('');
-  const [restTime, setRestTime] = useState<number | ''>('');
+  const [weight, setWeight] = useState<number | "">("");
+  const [repetitions, setRepetitions] = useState<number | "">("");
+  const [restTime, setRestTime] = useState<number | "">("");
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
-    setWeight(setData.weight_kg ?? '');
-    setRepetitions(setData.repetitions ?? '');
-    setRestTime(setData.rest_time ?? '');
+    setWeight(setData.weight_kg ?? "");
+    setRepetitions(setData.repetitions ?? "");
+    setRestTime(setData.rest_time ?? "");
   }, [setData]);
 
   async function handleUpdate(e: React.FormEvent) {
     e.preventDefault();
 
-    if (weight === '' || repetitions === '') {
+    if (weight === "" || repetitions === "") {
       setError("Preencha os campos obrigatórios.");
       return;
     }
@@ -42,7 +42,7 @@ export default function EditSetModal({
       const payload = {
         weight_kg: Number(weight),
         repetitions: Number(repetitions),
-        rest_time: restTime !== '' ? Number(restTime) : 0,
+        rest_time: restTime !== "" ? Number(restTime) : 0,
       };
       const response = await api.patch(`/sets/${setData.id}`, payload);
       onSetUpdated(response.data);
@@ -55,7 +55,11 @@ export default function EditSetModal({
 
   return (
     <Transition appear show as={Fragment}>
-      <Dialog as="div" className="fixed inset-0 z-50 overflow-y-auto" onClose={onClose}>
+      <Dialog
+        as="div"
+        className="fixed inset-0 z-50 overflow-y-auto"
+        onClose={onClose}
+      >
         <div className="min-h-screen px-4 text-center">
           <Transition.Child
             as={Fragment}
@@ -69,7 +73,10 @@ export default function EditSetModal({
             <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" />
           </Transition.Child>
 
-          <span className="inline-block h-screen align-middle" aria-hidden="true">
+          <span
+            className="inline-block h-screen align-middle"
+            aria-hidden="true"
+          >
             &#8203;
           </span>
 
@@ -83,10 +90,7 @@ export default function EditSetModal({
             leaveTo="opacity-0 scale-95"
           >
             <div className="inline-block w-full max-w-md p-6 my-8 text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
-              <Dialog.Title
-                as="h3"
-                className="text-lg font-bold text-gray-800"
-              >
+              <Dialog.Title as="h3" className="text-lg font-bold text-gray-800">
                 Editar Série #{setData.number}
               </Dialog.Title>
 
@@ -99,10 +103,17 @@ export default function EditSetModal({
                   </label>
                   <input
                     type="number"
+                    step="0.1"
                     min="0"
                     value={weight}
-                    onFocus={(e) => e.target.value === "0" && (e.target.value = "")}
-                    onChange={(e) => setWeight(e.target.value === '' ? '' : Number(e.target.value))}
+                    onFocus={(e) =>
+                      e.target.value === "0" && (e.target.value = "")
+                    }
+                    onChange={(e) =>
+                      setWeight(
+                        e.target.value === "" ? "" : Number(e.target.value)
+                      )
+                    }
                     placeholder="Ex: 30"
                     required
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -117,8 +128,14 @@ export default function EditSetModal({
                     type="number"
                     min="0"
                     value={repetitions}
-                    onFocus={(e) => e.target.value === "0" && (e.target.value = "")}
-                    onChange={(e) => setRepetitions(e.target.value === '' ? '' : Number(e.target.value))}
+                    onFocus={(e) =>
+                      e.target.value === "0" && (e.target.value = "")
+                    }
+                    onChange={(e) =>
+                      setRepetitions(
+                        e.target.value === "" ? "" : Number(e.target.value)
+                      )
+                    }
                     placeholder="Ex: 12"
                     required
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -133,8 +150,14 @@ export default function EditSetModal({
                     type="number"
                     min="0"
                     value={restTime}
-                    onFocus={(e) => e.target.value === "0" && (e.target.value = "")}
-                    onChange={(e) => setRestTime(e.target.value === '' ? '' : Number(e.target.value))}
+                    onFocus={(e) =>
+                      e.target.value === "0" && (e.target.value = "")
+                    }
+                    onChange={(e) =>
+                      setRestTime(
+                        e.target.value === "" ? "" : Number(e.target.value)
+                      )
+                    }
                     placeholder="Opcional"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
