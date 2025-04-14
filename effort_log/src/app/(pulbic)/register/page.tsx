@@ -6,6 +6,7 @@ import api from "@/lib/api";
 import Head from "next/head";
 import axios from "axios";
 import Image from "next/image";
+import IMask from "imask";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -30,8 +31,12 @@ export default function RegisterPage() {
     setError("");
 
     try {
+      const [day, month, year] = form.birth_date.split("/");
+      const isoBirthDate = `${year}-${month}-${day}`;
+
       const payload = {
         ...form,
+        birth_date: isoBirthDate,
         weight: parseFloat(form.weight),
         height: parseFloat(form.height),
       };
@@ -94,14 +99,21 @@ export default function RegisterPage() {
               onChange={handleChange}
               required
             />
+
             <input
               name="birth_date"
-              type="date"
+              type="text"
+              placeholder="dd/mm/aaaa"
               className="w-full border rounded p-2"
-              value={form.birth_date}
-              onChange={handleChange}
+              ref={(el) => {
+                if (el) {
+                  IMask(el, { mask: "00/00/0000" });
+                }
+              }}
+              onChange={(e) => setForm({ ...form, birth_date: e.target.value })}
               required
             />
+
             <input
               name="weight"
               type="number"
