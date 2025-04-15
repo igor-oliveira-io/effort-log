@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -18,15 +19,16 @@ export default function NewTrainingPage() {
   const { userId } = useAuth();
   const router = useRouter();
 
-  const [name, setName] = useState("");
-  const [useCustomDate, setUseCustomDate] = useState(false);
   const now = dayjs().tz("America/Sao_Paulo");
-  const [startDatetime, setStartDatetime] = useState(
-    now.format("YYYY-MM-DDTHH:mm")
+  const [name, setName] = useState("");
+  const [useCustomTime, setUseCustomTime] = useState(false);
+  const [customTime, setCustomTime] = useState(now.format("HH:mm"));
+  const [customEndTime, setCustomEndTime] = useState(
+    now.add(1, "hour").format("HH:mm")
   );
   const [loading, setLoading] = useState(false);
   const [hasActiveSession, setHasActiveSession] = useState(false);
-  const [checkingActiveSession, setCheckingActiveSession] = useState(true); // usado no spinner
+  const [checkingActiveSession, setCheckingActiveSession] = useState(true);
 
   useEffect(() => {
     const checkActiveSession = async () => {
@@ -53,12 +55,43 @@ export default function NewTrainingPage() {
 
     setLoading(true);
     try {
-      const payload = {
+      let start = now;
+      let end = now;
+      let status = "ACTIVE";
+      let duration = null;
+
+      if (useCustomTime) {
+        const [startHour, startMinute] = customTime.split(":");
+        const [endHour, endMinute] = customEndTime.split(":");
+
+        start = now
+          .hour(Number(startHour))
+          .minute(Number(startMinute))
+          .second(0);
+        end = now.hour(Number(endHour)).minute(Number(endMinute)).second(0);
+
+        if (end.isBefore(start)) {
+          toast.error("O horário de término não pode ser anterior ao início.");
+          setLoading(false);
+          return;
+        }
+
+        status = "FINISHED";
+        duration = end.diff(start, "minute");
+      }
+
+      const payload: any = {
         name,
-        start_datetime: dayjs(startDatetime).utc().toISOString(),
+        start_datetime: start.utc().toISOString(),
         user_id: userId,
-        status: "ACTIVE",
+        status,
       };
+
+      if (status === "FINISHED") {
+        payload.end_datetime = end.utc().toISOString();
+        payload.duration = duration;
+        payload.calories_burned = 0;
+      }
 
       const response = await api.post("/training-sessions", payload);
       toast.success("Treino iniciado!");
@@ -71,7 +104,6 @@ export default function NewTrainingPage() {
     }
   };
 
-  // 🔄 Exibe o Spinner enquanto checa sessão ativa
   if (checkingActiveSession) {
     return (
       <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">
@@ -115,28 +147,45 @@ export default function NewTrainingPage() {
             <label className="inline-flex items-center space-x-2 text-sm text-gray-700">
               <input
                 type="checkbox"
-                checked={useCustomDate}
-                onChange={(e) => setUseCustomDate(e.target.checked)}
+                checked={useCustomTime}
+                onChange={(e) => setUseCustomTime(e.target.checked)}
                 disabled={hasActiveSession}
               />
-              <span>Data e horário personalizado</span>
+              <span>Usar horário personalizado</span>
             </label>
 
-            {!useCustomDate ? (
-              <p className="text-sm text-gray-500">
-                Usando data/hora atual:{" "}
-                <span className="font-semibold">
-                  {now.format("DD/MM/YYYY, HH:mm:ss")}
-                </span>
-              </p>
-            ) : (
-              <input
-                type="datetime-local"
-                value={startDatetime}
-                onChange={(e) => setStartDatetime(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
-                disabled={hasActiveSession}
-              />
+            {useCustomTime && (
+              <div className="space-y-2">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Horário de Início
+                  </label>
+                  <input
+                    type="time"
+                    value={customTime}
+                    onChange={(e) => setCustomTime(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Horário de Término
+                  </label>
+                  <input
+                    type="time"
+                    value={customEndTime}
+                    onChange={(e) => setCustomEndTime(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                  />
+                </div>
+
+                <p className="text-xs text-gray-500">
+                  Esses horários serão considerados como parte do dia de hoje.
+                  Treinos com horário personalizado serão salvos como
+                  finalizados.
+                </p>
+              </div>
             )}
           </div>
         </div>

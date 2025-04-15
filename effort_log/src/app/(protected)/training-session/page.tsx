@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
-import TrainingSessionContent from "@/components/trainingSessionContent";
+import TrainingSessionContent from "@/components/training-session/TrainingSessionContent";
 
 export default function TrainingSessionPage() {
   return (
