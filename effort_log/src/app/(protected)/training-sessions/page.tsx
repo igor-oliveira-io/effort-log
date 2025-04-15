@@ -103,7 +103,19 @@ export default function TrainingSessionsPage() {
                         >
                           <td className="py-2 px-4 border-b">{session.name}</td>
                           <td className="py-2 px-4 border-b">
-                            {session.status}
+                            {session.status === "FINISHED" ? (
+                              <span className="flex items-center gap-1 text-green-600 font-medium">
+                                <span className="w-2 h-2 rounded-full bg-green-500" />
+                                Finalizado
+                              </span>
+                            ) : session.status === "ACTIVE" ? (
+                              <span className="flex items-center gap-1 text-yellow-600 font-medium">
+                                <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
+                                Em andamento
+                              </span>
+                            ) : (
+                              <span className="text-gray-500">Pausado</span>
+                            )}
                           </td>
                           <td className="py-2 px-4 border-b">
                             {session.calories_burned || "-"}
@@ -157,8 +169,21 @@ export default function TrainingSessionsPage() {
                       <p>
                         <strong>Nome:</strong> {session.name}
                       </p>
-                      <p>
-                        <strong>Status:</strong> {session.status}
+                      <p className="flex items-center gap-2">
+                        <strong>Status:</strong>{" "}
+                        {session.status === "FINISHED" ? (
+                          <span className="text-green-600 font-medium">
+                            ✔️ Finalizado
+                          </span>
+                        ) : session.status === "ACTIVE" ? (
+                          <span className="text-yellow-600 font-medium">
+                            🏃‍♂️ Em andamento
+                          </span>
+                        ) : (
+                          <span className="text-gray-600 font-medium">
+                            ⏸️ Pausado
+                          </span>
+                        )}
                       </p>
                       <p>
                         <strong>Calorias:</strong>{" "}

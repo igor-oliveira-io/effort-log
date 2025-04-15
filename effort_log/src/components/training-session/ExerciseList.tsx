@@ -47,7 +47,10 @@ export default function ExerciseList({
             <div>
               <h2 className="text-lg font-semibold">{exercise.name}</h2>
               <p className="text-sm text-gray-500">
-                Tipo: {exercise.exercise_type}
+                Tipo:{" "}
+                {exercise.exercise_type === "STRENGTH"
+                  ? "Musculação"
+                  : "Cardio"}
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -70,25 +73,40 @@ export default function ExerciseList({
                 <PencilLine size={20} />
               </button>
               <button
-                onClick={() => onDeleteExercise(exercise.id)}
+                onClick={() => {
+                  if (
+                    confirm(
+                      "Tem certeza que deseja excluir este exercício e todas as séries?"
+                    )
+                  ) {
+                    onDeleteExercise(exercise.id);
+                  }
+                }}
                 className="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200"
                 title="Excluir exercício"
               >
                 <Trash2 size={20} />
               </button>
-              <button
-                onClick={() => onAddSet(exercise.id)}
-                className="p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200"
-                title="Adicionar série"
-              >
-                <CopyPlus size={20} />
-              </button>
+              {exercise.exercise_type !== "CARDIO" && (
+                <button
+                  onClick={() => onAddSet(exercise.id)}
+                  className="p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200"
+                  title="Adicionar série"
+                >
+                  <CopyPlus size={20} />
+                </button>
+              )}
             </div>
           </div>
 
           {!collapsed[exercise.id] && (
             <div className="mt-4 space-y-2">
-              {exercise.sets?.length > 0 ? (
+              {exercise.exercise_type === "CARDIO" ? (
+                <p className="text-sm text-gray-600">
+                  Duração:{" "}
+                  {exercise.duration ? `${exercise.duration} min` : "-"}
+                </p>
+              ) : exercise.sets?.length > 0 ? (
                 exercise.sets.map((set: any) => (
                   <div
                     key={set.id}
@@ -114,7 +132,11 @@ export default function ExerciseList({
                         <CopyPlus size={18} />
                       </button>
                       <button
-                        onClick={() => onDeleteSet(set.id, exercise.id)}
+                        onClick={() => {
+                          if (confirm("Deseja realmente excluir esta série?")) {
+                            onDeleteSet(set.id, exercise.id);
+                          }
+                        }}
                         className="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200"
                         title="Excluir série"
                       >

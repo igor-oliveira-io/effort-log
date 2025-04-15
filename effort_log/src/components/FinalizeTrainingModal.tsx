@@ -35,6 +35,7 @@ export default function FinalizeTrainingModal({
         date: today,
       });
 
+      sessionStorage.setItem("showCongrats", "true");
       await onFinalize(parsedCalories);
       onClose();
     } catch (err) {
@@ -44,17 +45,17 @@ export default function FinalizeTrainingModal({
 
   return (
     <Transition appear show as={Fragment}>
-      <Dialog
-        as="div"
-        className="fixed inset-0 z-[999]"
-        onClose={onClose}
-      >
+      <Dialog as="div" className="fixed inset-0 z-[999]" onClose={onClose}>
         <div className="flex min-h-screen items-center justify-center px-4">
           {/* Backdrop */}
           <Transition.Child
             as={Fragment}
-            enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100"
-            leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0"
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
           >
             <div className="fixed inset-0 bg-black bg-opacity-30" />
           </Transition.Child>
@@ -62,21 +63,31 @@ export default function FinalizeTrainingModal({
           {/* Modal */}
           <Transition.Child
             as={Fragment}
-            enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100"
-            leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95"
+            enter="ease-out duration-300"
+            enterFrom="opacity-0 scale-95"
+            enterTo="opacity-100 scale-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100 scale-100"
+            leaveTo="opacity-0 scale-95"
           >
             <div className="z-[1000] inline-block w-full max-w-md p-6 my-8 align-middle bg-white rounded-2xl shadow-xl text-center space-y-4">
               <div className="flex flex-col items-center">
                 <CheckCircle size={48} className="text-green-500 mb-2" />
-                <h3 className="text-2xl font-bold text-gray-800">Parabéns pelo treino!</h3>
+                <h3 className="text-2xl font-bold text-gray-800">
+                  Parabéns pelo treino!
+                </h3>
                 <p className="text-gray-600 text-sm">
-                  Você completou <strong>{exerciseCount}</strong> exercício(s) em <strong>{totalDuration} minutos</strong>.
+                  Você completou <strong>{exerciseCount}</strong> exercício(s)
+                  em <strong>{totalDuration} minutos</strong>.
                 </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4 mt-4">
                 <div className="text-left">
-                  <label htmlFor="calories" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="calories"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Calorias queimadas (opcional):
                   </label>
                   <input

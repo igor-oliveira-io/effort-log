@@ -1,14 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+// components/EditExerciseModal.tsx
 "use client";
 
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState } from "react";
 import api from "@/lib/api";
+import { toast } from "react-toastify";
+import { PencilLine } from "lucide-react";
 
 interface EditExerciseModalProps {
   exerciseData: any;
   onClose: () => void;
-  onExerciseUpdated: (updatedExercise: any) => void;
+  onExerciseUpdated: (updated: any) => void;
 }
 
 export default function EditExerciseModal({
@@ -16,119 +19,120 @@ export default function EditExerciseModal({
   onClose,
   onExerciseUpdated,
 }: EditExerciseModalProps) {
-  const [name, setName] = useState("");
-  const [exerciseType, setExerciseType] = useState("STRENGTH");
-  const [error, setError] = useState("");
+  const [name, setName] = useState(exerciseData.name || "");
+  const [duration, setDuration] = useState(exerciseData.duration || "");
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (exerciseData) {
-      setName(exerciseData.name);
-      setExerciseType(exerciseData.exercise_type);
-    }
-  }, [exerciseData]);
-
-  async function handleUpdate(e: React.FormEvent) {
-    e.preventDefault();
+  const handleUpdate = async () => {
+    setLoading(true);
     try {
-      const payload = { name, exercise_type: exerciseType };
-      const response = await api.patch(
+      const payload: any = {
+        name,
+      };
+
+      if (exerciseData.exercise_type === "CARDIO") {
+        payload.duration = Number(duration);
+      }
+
+      const res = await api.patch(
         `/training-exercises/${exerciseData.id}`,
         payload
       );
-      onExerciseUpdated(response.data);
+      onExerciseUpdated(res.data);
+      toast.success("Exercício atualizado com sucesso!");
       onClose();
     } catch (err) {
       console.error(err);
-      setError("Erro ao atualizar o exercício.");
+      toast.error("Erro ao atualizar exercício.");
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <Transition appear show as={Fragment}>
-      <Dialog as="div" className="fixed inset-0 z-50 overflow-y-auto" onClose={onClose}>
-        <div className="min-h-screen px-4 text-center">
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" />
-          </Transition.Child>
+      <Dialog as="div" className="relative z-50" onClose={onClose}>
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-black bg-opacity-25" />
+        </Transition.Child>
 
-          <span className="inline-block h-screen align-middle" aria-hidden="true">
-            &#8203;
-          </span>
+        <div className="fixed inset-0 overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Title
+                  as="h3"
+                  className="text-lg font-medium leading-6 text-gray-900 flex items-center gap-2"
+                >
+                  <PencilLine size={20} /> Editar Exercício
+                </Dialog.Title>
 
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0 scale-95"
-            enterTo="opacity-100 scale-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100 scale-100"
-            leaveTo="opacity-0 scale-95"
-          >
-            <div className="inline-block w-full max-w-md p-6 my-8 text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
-              <Dialog.Title
-                as="h3"
-                className="text-lg font-bold text-gray-800"
-              >
-                Editar Exercício
-              </Dialog.Title>
+                <div className="mt-4 space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Nome do exercício
+                    </label>
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                    />
+                  </div>
 
-              <form onSubmit={handleUpdate} className="mt-4 space-y-4">
-                {error && <p className="text-red-500">{error}</p>}
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Nome do Exercício
-                  </label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    placeholder="Ex: Agachamento"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                  {exerciseData.exercise_type === "CARDIO" && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Duração (minutos)
+                      </label>
+                      <input
+                        type="number"
+                        value={duration}
+                        onChange={(e) => setDuration(e.target.value)}
+                        min={1}
+                        className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+                      />
+                    </div>
+                  )}
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Tipo de Exercício
-                  </label>
-                  <select
-                    value={exerciseType}
-                    onChange={(e) => setExerciseType(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="STRENGTH">Musculação</option>
-                    <option value="CARDIO">Aeróbico</option>
-                  </select>
-                </div>
-
-                <div className="flex justify-end gap-2 pt-4">
+                <div className="mt-6 flex justify-end gap-2">
                   <button
                     type="button"
+                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
                     onClick={onClose}
-                    className="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-lg font-medium"
+                    disabled={loading}
                   >
                     Cancelar
                   </button>
                   <button
-                    type="submit"
-                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold"
+                    type="button"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    onClick={handleUpdate}
+                    disabled={loading}
                   >
-                    Salvar
+                    {loading ? "Salvando..." : "Salvar"}
                   </button>
                 </div>
-              </form>
-            </div>
-          </Transition.Child>
+              </Dialog.Panel>
+            </Transition.Child>
+          </div>
         </div>
       </Dialog>
     </Transition>

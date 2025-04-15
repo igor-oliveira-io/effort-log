@@ -34,10 +34,13 @@ export default function NavigationBar() {
 
   return (
     <nav className="w-full border-b bg-white shadow-sm py-2 px-4 flex items-center justify-between sticky top-0 z-50">
-      <div className="flex items-center space-x-2">
+      <Link
+        href="/dashboard"
+        className="flex items-center space-x-2 hover:opacity-80 transition"
+      >
         <Image src="/logo.png" alt="Logo" width={40} height={40} />
         <span className="font-bold text-lg text-blue-600">Effort Log</span>
-      </div>
+      </Link>
 
       {/* Desktop Menu */}
       <div className="hidden md:flex items-center space-x-6">
