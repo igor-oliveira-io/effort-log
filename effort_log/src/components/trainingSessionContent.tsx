@@ -11,6 +11,8 @@ import NewSetModal from "@/components/NewSetModal";
 import EditSetModal from "@/components/EditSetModal";
 import EditExerciseModal from "@/components/EditExerciseModal";
 import FinalizeTrainingModal from "@/components/FinalizeTrainingModal";
+import LoadingSpinner from "@/components/LoadingSpinner"; // ✅ Importado
+
 import {
   PencilLine,
   Trash2,
@@ -125,9 +127,13 @@ export default function TrainingSessionPage() {
     );
   };
 
-  if (loading || !sessionId || !userId)
-    return <p className="p-4">Carregando treino...</p>;
-
+  if (loading || !sessionId || !userId) {
+    return (
+      <div className="flex items-center justify-center min-h-[calc(100vh-8rem)]">
+        <LoadingSpinner />
+      </div>
+    );
+  }
   return (
     <ProtectedRoute>
       <div className="w-full px-4 pt-4 pb-28 max-w-5xl mx-auto">

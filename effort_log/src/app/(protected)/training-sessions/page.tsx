@@ -9,6 +9,7 @@ import api from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { PencilLine, Trash2 } from "lucide-react";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function TrainingSessionsPage() {
   const router = useRouter();
@@ -52,14 +53,18 @@ export default function TrainingSessionsPage() {
         <Head>
           <title>Treinos Realizados - Effort Log</title>
         </Head>
-        <div className="flex flex-col items-center justify-center px-4 py-8 w-full">
+
+        <div className="flex flex-col items-center justify-center px-4 py-8 w-full min-h-[calc(100vh-8rem)]">
           <div className="w-full max-w-screen-lg bg-white p-6 rounded-2xl shadow-xl space-y-6">
             <h1 className="text-3xl font-bold text-center">
               Treinos Realizados
             </h1>
 
+            {/* 🔄 Exibe o spinner apenas no conteúdo */}
             {isLoading ? (
-              <p className="text-center text-gray-500">Carregando treinos...</p>
+              <div className="flex justify-center items-center h-[300px]">
+                <LoadingSpinner />
+              </div>
             ) : error ? (
               <p className="text-center text-red-500">
                 Erro ao carregar treinos
