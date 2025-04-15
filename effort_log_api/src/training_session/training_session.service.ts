@@ -91,6 +91,21 @@ export class TrainingSessionService {
   }
 
   async remove(id: string): Promise<TrainingSession> {
+    const exercises = await this.prisma.trainingExercise.findMany({
+      where: { session_id: id },
+      select: { id: true },
+    });
+
+    const exerciseIds = exercises.map((e) => e.id);
+
+    await this.prisma.set.deleteMany({
+      where: { training_exercise_id: { in: exerciseIds } },
+    });
+
+    await this.prisma.trainingExercise.deleteMany({
+      where: { session_id: id },
+    });
+
     return await this.prisma.trainingSession.delete({
       where: { id },
     });

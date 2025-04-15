@@ -57,6 +57,10 @@ export class TrainingExerciseService {
   }
 
   async remove(id: string): Promise<TrainingExercise> {
+    await this.prisma.set.deleteMany({
+      where: { training_exercise_id: id },
+    });
+
     return await this.prisma.trainingExercise.delete({
       where: { id },
     });
